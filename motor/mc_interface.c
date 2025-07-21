@@ -563,6 +563,19 @@ void mc_interface_set_duty(float dutyCycle) {
 	events_add("set_duty", dutyCycle);
 }
 
+// start saluqi changes
+void mc_interface_set_iq(float iq_test){
+	Saluqi()->iq_test = iq_test;
+	return;
+	}
+
+void mc_interface_set_id(float id_test){
+	Saluqi()->id_test = id_test;
+	return;
+	}
+
+// end saluqi changes
+
 void mc_interface_set_duty_noramp(float dutyCycle) {
 	if (fabsf(dutyCycle) > 0.001) {
 		SHUTDOWN_RESET();

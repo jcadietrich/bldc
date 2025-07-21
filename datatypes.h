@@ -1379,6 +1379,11 @@ typedef struct {
 	uint8_t num_vescs;
 } setup_values;
 
+typedef struct{
+	float iq_test;
+	float id_test;
+} Saluqi;
+
 typedef struct {
 	systime_t time_start;
 	double samples;

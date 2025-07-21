@@ -1670,6 +1670,25 @@ static lbm_value ext_set_pos(lbm_value *args, lbm_uint argn) {
 	return ENC_SYM_TRUE;
 }
 
+/*begin changes saluqi*/
+static lbm_value ext_set_id(lbm_value *args, lbm_uint argn) {
+	LBM_CHECK_ARGN_NUMBER(1);
+	timeout_reset();
+	mc_interface_set_id(lbm_dec_as_float(args[0]));
+	return ENC_SYM_TRUE;
+}
+
+static lbm_value ext_set_iq(lbm_value *args, lbm_uint argn) {
+	LBM_CHECK_ARGN_NUMBER(1);
+	timeout_reset();
+	mc_interface_set_iq(lbm_dec_as_float(args[0]));
+	return ENC_SYM_TRUE;
+}
+
+/* end changes saluqi*/
+
+
+
 static lbm_value ext_foc_openloop(lbm_value *args, lbm_uint argn) {
 	LBM_CHECK_ARGN_NUMBER(2);
 	timeout_reset();
@@ -5342,6 +5361,11 @@ void lispif_load_vesc_extensions(void) {
 	lbm_add_extension("foc-play-tone", ext_foc_play_tone);
 	lbm_add_extension("foc-play-samples", ext_foc_play_samples);
 	lbm_add_extension("foc-play-stop", ext_foc_play_stop);
+
+	//begin saluqi changes
+	lbm_add_extension("set-id", ext_set_id);
+	lbm_add_extension("set-iq", ext_set_iq);
+	//end saluqi changes
 
 	// Motor get commands
 	lbm_add_extension("get-current", ext_get_current);

@@ -3393,12 +3393,15 @@ void mcpwm_foc_adc_int_handler(void *p, uint32_t flags) {
 					(float*)&motor_now->m_motor_state.phase_cos);
 		}
 
+        //Modified Saluqi begin
+
+        float iq_ref = iq_set_tmp;
+
 		// Apply MTPA. See: https://github.com/vedderb/bldc/pull/179
 		const float ld_lq_diff = conf_now->foc_motor_ld_lq_diff;
 		if (conf_now->foc_mtpa_mode != MTPA_MODE_OFF && ld_lq_diff != 0.0) {
 			const float lambda = conf_now->foc_motor_flux_linkage;
 
-			float iq_ref = iq_set_tmp;
 			if (conf_now->foc_mtpa_mode == MTPA_MODE_IQ_MEASURED) {
 				iq_ref = utils_min_abs(iq_set_tmp, motor_now->m_motor_state.iq_filter);
 			}
@@ -3410,9 +3413,20 @@ void mcpwm_foc_adc_int_handler(void *p, uint32_t flags) {
 		const float mod_q = motor_now->m_motor_state.mod_q_filter;
 
 		// Running FW from the 1 khz timer seems fast enough.
-//		run_fw(motor_now, dt);
-		id_set_tmp -= motor_now->m_i_fw_set;
-		iq_set_tmp -= SIGN(mod_q) * motor_now->m_i_fw_set * conf_now->foc_fw_q_current_factor;
+        // run_fw(motor_now, dt);
+		//id_set_tmp -= motor_now->m_i_fw_set;
+		//iq_set_tmp -= SIGN(mod_q) * motor_now->m_i_fw_set * conf_now->foc_fw_q_current_factor;
+
+		float currentNow = motor_now->m_motor_state.iq;
+		float maxCurrent = motor_now->m_conf->foc_fw_current_max;
+
+        id_set_tmp = motor_now->m_i_fw_set;
+        iq_set_tmp = SIGN(iq_set_tmp) * fabsf(utils_min_abs(currentNow,sqrtf(SQ(maxCurrent) - SQ(id_set_tmp))));
+
+		id_set_tmp = Saluqi()->id_test;
+		iq_set_tmp = Saluqi()->iq_test;
+
+		//Modified Saluqi end
 
 		// Apply current limits
 		// TODO: Consider D axis current for the input current as well. Currently this is done using
